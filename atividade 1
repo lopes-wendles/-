@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PEDIDOS 100
+#define TAM_NOME 50
+
+typedef struct {
+    char nome[TAM_NOME];
+} Pedido;
+
+typedef struct {
+    Pedido pedidos[MAX_PEDIDOS];
+    int total_pedidos;
+} Lanchonete;
+
+void adicionar_pedido(Lanchonete *lanchonete, const char *nome) {
+    if (lanchonete->total_pedidos < MAX_PEDIDOS) {
+        strcpy(lanchonete->pedidos[lanchonete->total_pedidos].nome, nome);
+        lanchonete->total_pedidos++;
+        printf("Pedido '%s' adicionado com sucesso!\n", nome);
+    } else {
+        printf("Limite de pedidos atingido.\n");
+    }
+}
+
+void exibir_pedidos(Lanchonete *lanchonete) {
+    if (lanchonete->total_pedidos == 0) {
+        printf("Não há pedidos na fila.\n");
+        return;
+    }
+
+    printf("Pedidos atuais:\n");
+    for (int i = 0; i < lanchonete->total_pedidos; i++) {
+        printf("%d: %s\n", i + 1, lanchonete->pedidos[i].nome);
+    }
+}
+
+void remover_pedido(Lanchonete *lanchonete) {
+    if (lanchonete->total_pedidos > 0) {
+        printf("Pedido '%s' atendido e removido da fila.\n", lanchonete->pedidos[0].nome);
+        for (int i = 0; i < lanchonete->total_pedidos - 1; i++) {
+            lanchonete->pedidos[i] = lanchonete->pedidos[i + 1];
+        }
+        lanchonete->total_pedidos--;
+    } else {
+        printf("Não há pedidos para remover.\n");
+    }
+}
+
+int main() {
+    Lanchonete lanchonete;
+    lanchonete.total_pedidos = 0;
+
+    int opcao;
+    char nome[TAM_NOME];
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Fazer um pedido\n");
+        printf("2. Exibir todos os pedidos\n");
+        printf("3. Atender um pedido\n");
+        printf("4. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+        getchar();
+        switch (opcao) {
+            case 1:
+                printf("Digite o nome do pedido: ");
+                fgets(nome, TAM_NOME, stdin);
+                nome[strcspn(nome, "\n")] = '\0'; 
+                adicionar_pedido(&lanchonete, nome);
+                break;
+            case 2:
+                exibir_pedidos(&lanchonete);
+                break;
+            case 3:
+                remover_pedido(&lanchonete);
+                break;
+            case 4:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+                break;
+        }
+    } while (opcao != 4);
+
+    return 0;
+}
