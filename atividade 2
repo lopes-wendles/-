@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Compromisso {
+    char descricao[100];
+    int  horario; 
+    struct Compromisso* proximo;
+} Compromisso;
+
+
+Compromisso* cabeca = NULL ;
+
+void inserirCompromisso(int horario, const char* descricao) {
+    Compromisso* novo = (Compromisso*)malloc(sizeof(Compromisso));
+    novo->horario = horario;
+    strcpy(novo->descricao, descricao);
+    novo->proximo = NULL;
+
+
+    if (cabeca == NULL || cabeca->horario > horario) {
+        novo->proximo = cabeca;
+        cabeca = novo;
+        return;
+    }
+
+
+    Compromisso* atual = cabeca;
+    while (atual->proximo != NULL && atual->proximo->horario < horario) {
+        atual = atual->proximo;
+    }
+
+    novo->proximo = atual->proximo;
+    atual->proximo = novo;
+}
+
+void exibirCompromissos() {
+    Compromisso* atual = cabeca;
+    if (atual == NULL) {
+        printf("Nenhum compromisso agendado.\n");
+        return;
+    }
+    printf("Compromissos:\n");
+    while (atual != NULL) {
+        printf("%04d: %s\n", atual->horario, atual->descricao);
+        atual = atual->proximo;
+    }
+}
+
+
+void removerCompromisso(int horario) {
+    Compromisso* atual = cabeca;
+    Compromisso* anterior = NULL;
+
+    while (atual != NULL && atual->horario != horario) {
+        anterior = atual;
+        atual = atual->proximo;
+    }
+
+    if (atual == NULL) {
+        printf("Compromisso com horário %04d não encontrado.\n", horario);
+        return;
+    }
+
+    if (anterior == NULL) {
+
+        cabeca = atual->proximo;
+    } else {
+        anterior->proximo = atual->proximo;
+    }
+
+    free(atual);
+    printf("Compromisso com horário %04d removido.\n", horario);
+}
+
+
+int main() {
+    int opcao, horario;
+    char descricao[100];
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Inserir compromisso\n");
+        printf("2. Exibir compromissos\n");
+        printf("3. Remover compromisso\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                printf("Informe o horário: ");
+                scanf("%d", &horario);
+                printf("Informe a descrição: ");
+                getchar(); 
+                fgets(descricao, sizeof(descricao), stdin);
+                descricao[strcspn(descricao, "\n")] = 0; 
+                inserirCompromisso(horario, descricao);
+                break;
+            case 2:
+                exibirCompromissos();
+                break;
+            case 3:
+                printf("Informe o horário do compromisso a ser removido : ");
+                scanf("%d", &horario);
+                removerCompromisso(horario);
+                break;
+            case 0:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+                break;
+        }
+    } while (opcao != 0);
+
+
+    while (cabeca != NULL) {
+        Compromisso* temp = cabeca;
+        cabeca = cabeca->proximo;
+        free(temp);
+    }
+
+    return 0;
+}
