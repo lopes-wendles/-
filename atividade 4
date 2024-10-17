@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_LIVROS 100
+
+typedef struct {
+    char titulo[100];
+    int danificado; 
+} Livro;
+
+Livro acervo[MAX_LIVROS];
+int totalLivros = 0;
+
+void adicionar_livro() {
+    if (totalLivros < MAX_LIVROS) {
+        printf("Digite o título do livro: ");
+        scanf(" %[^\n]", acervo[totalLivros].titulo);
+
+        acervo[totalLivros].danificado = 0;
+        totalLivros++;
+    } else {
+        printf("Limite de livros atingido!\n");
+    }
+}
+
+void exibir_livros() {
+    printf("Livros disponíveis:\n");
+    for (int i = 0; i < totalLivros; i++) {
+        if (!acervo[i].danificado) {
+            printf("Título: %s\n", acervo[i].titulo);
+        }
+    }
+}
+
+void remover_livros_danificados() {
+    int removidos = 0;
+    for (int i = 0; i < totalLivros; i++) {
+        if (acervo[i].danificado) {
+            removidos++;
+            for (int j = i; j < totalLivros - 1; j++) {
+                acervo[j] = acervo[j + 1]; 
+            }
+            totalLivros--;
+            i--; 
+        }
+    }
+    if (removidos > 0) {
+        printf("%d livro(s) danificado(s) removido(s).\n", removidos);
+    } else {
+        printf("Não há livros danificados para remover.\n");
+    }
+}
+
+int main() {
+    int opcao;
+
+    while (1) {
+        printf("\nEscolha uma opção:\n");
+        printf("1. Adicionar livro\n");
+        printf("2. Exibir livros\n");
+        printf("3. Remover livros danificados\n");
+        printf("4. Sair\n");
+        printf("Opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                adicionar_livro();
+                break;
+            case 2:
+                exibir_livros();
+                break;
+            case 3:
+                remover_livros_danificados();
+                break;
+            case 4:
+                return 0;
+            default:
+                printf("Opção inválida! Tente novamente.\n");
+                break;
+        }
+    }
+
+    return 0;
+}
