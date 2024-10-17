@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ALUNOS 100
+
+typedef struct {
+    int matricula;
+    char nome[50];
+} Aluno;
+
+Aluno alunos[MAX_ALUNOS];
+int total_alunos = 0;
+
+void inserir_aluno() {
+    if (total_alunos < MAX_ALUNOS) {
+        printf("Digite a matrícula do aluno: ");
+        scanf("%d", &alunos[total_alunos].matricula);
+        printf("Digite o nome do aluno: ");
+        scanf(" %[^\n]", alunos[total_alunos].nome);
+        total_alunos++;
+    } else {
+        printf("Limite de alunos alcançado.\n");
+    }
+}
+
+void exibir_alunos() {
+    for (int i = 0; i < total_alunos; i++) {
+        printf("Matrícula: %d, Nome: %s\n", alunos[i].matricula, alunos[i].nome);
+    }
+}
+
+void buscar_aluno() {
+    int matricula;
+    printf("Digite a matrícula do aluno que deseja buscar: ");
+    scanf("%d", &matricula);
+
+    for (int i = 0; i < total_alunos; i++) {
+        if (alunos[i].matricula == matricula) {
+            printf("Aluno encontrado: %s\n", alunos[i].nome);
+            return;
+        }
+    }
+    printf("Aluno não encontrado\n");
+}
+
+int main() {
+    int opcao;
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Inserir Aluno\n");
+        printf("2. Exibir Alunos\n");
+        printf("3. Buscar Aluno\n");
+        printf("4. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                inserir_aluno();
+                break;
+            case 2:
+                exibir_alunos();
+                break;
+            case 3:
+                buscar_aluno();
+                break;
+            case 4:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+        }
+    } while (opcao != 4);
+
+    return 0;
+}
