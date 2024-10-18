@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Encomenda {
+    char nome[50];
+    float distancia;
+    struct Encomenda* proxima;
+} Encomenda;
+
+Encomenda* cabeca = NULL;
+
+void inserirEncomenda(char* nome, float distancia) {
+    Encomenda* nova = malloc(sizeof(Encomenda));
+    strcpy(nova->nome, nome);
+    nova->distancia = distancia;
+    nova->proxima = NULL;
+
+    if (cabeca == NULL || cabeca->distancia > distancia) {
+        nova->proxima = cabeca;
+        cabeca = nova;
+        return;
+    }
+
+    Encomenda* atual = cabeca;
+    while (atual->proxima != NULL && atual->proxima->distancia < distancia) {
+        atual = atual->proxima;
+    }
+    nova->proxima = atual->proxima;
+    atual->proxima = nova;
+}
+
+void exibirEncomendas() {
+    Encomenda* atual = cabeca;
+    while (atual != NULL) {
+        printf("Encomenda: %s, Distância: %.2f\n", atual->nome, atual->distancia);
+        atual = atual->proxima;
+    }
+}
+
+void removerEncomenda(char* nome) {
+    if (cabeca == NULL) return;
+
+    if (strcmp(cabeca->nome, nome) == 0) {
+        Encomenda* temp = cabeca;
+        cabeca = cabeca->proxima;
+        free(temp);
+        return;
+    }
+
+    Encomenda* atual = cabeca;
+    while (atual->proxima != NULL && strcmp(atual->proxima->nome, nome) != 0) {
+        atual = atual->proxima;
+    }
+
+    if (atual->proxima != NULL) {
+        Encomenda* temp = atual->proxima;
+        atual->proxima = atual->proxima->proxima;
+        free(temp);
+    }
+}
+
+int main() {
+    int opcao;
+    char nome[50];
+    float distancia;
+
+    do {
+        printf("1. Inserir Encomenda\n2. Exibir Encomendas\n3. Remover Encomenda\n4. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                printf("Nome da encomenda: ");
+                scanf("%s", nome);
+                printf("Distância: ");
+                scanf("%f", &distancia);
+                inserirEncomenda(nome, distancia);
+                break;
+
+            case 2:
+                exibirEncomendas();
+                break;
+
+            case 3:
+                printf("Nome da encomenda a remover: ");
+                scanf("%s", nome);
+                removerEncomenda(nome);
+                break;
+
+            case 4:
+                break;
+
+            default:
+                printf("Opção inválida!\n");
+                break;
+        }
+    } while (opcao != 4);
+
+    return 0;
+}
