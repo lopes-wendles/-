@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_PRODUTOS 100
+
+typedef struct {
+    char nome[100];
+    float preco;
+} Produto;
+
+typedef struct {
+    Produto produtos[MAX_PRODUTOS];
+    int total;
+} Estoque;
+
+void inicializarEstoque(Estoque *estoque) {
+    estoque->total = 0;
+}
+
+void inserirProduto(Estoque *estoque, const char *nome, float preco) {
+    if (estoque->total < MAX_PRODUTOS) {
+        Produto p;
+        strcpy(p.nome, nome);
+        p.preco = preco;
+        int i = estoque->total - 1;
+        while (i >= 0 && estoque->produtos[i].preco > preco) {
+            estoque->produtos[i + 1] = estoque->produtos[i];
+            i--;
+        }
+        estoque->produtos[i + 1] = p;
+        estoque->total++;
+    } else {
+        printf("Estoque cheio!\n");
+    }
+}
+
+void exibirPrecos(Estoque *estoque) {
+    for (int i = 0; i < estoque->total; i++) {
+        printf("Produto: %s, Preço: %.2f\n", estoque->produtos[i].nome, estoque->produtos[i].preco);
+    }
+}
+
+void removerProduto(Estoque *estoque, const char *nome) {
+    int i;
+    for (i = 0; i < estoque->total; i++) {
+        if (strcmp(estoque->produtos[i].nome, nome) == 0) {
+            break;
+        }
+    }
+    if (i < estoque->total) {
+        for (int j = i; j < estoque->total - 1; j++) {
+            estoque->produtos[j] = estoque->produtos[j + 1];
+        }
+        estoque->total--;
+    } else {
+        printf("Produto não encontrado!\n");
+    }
+}
+
+int main() {
+    Estoque estoque;
+    inicializarEstoque(&estoque);
+
+    int opcao;
+    char nome[100];
+    float preco;
+
+    do {
+        printf("1. Inserir produto\n2. Exibir preços\n3. Remover produto\n4. Sair\n");
+        scanf("%d", &opcao);
+        getchar();
+
+        switch (opcao) {
+            case 1:
+                printf("Digite o nome do produto: ");
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = '\0';
+                printf("Digite o preço do produto: ");
+                scanf("%f", &preco);
+                inserirProduto(&estoque, nome, preco);
+                break;
+            case 2:
+                exibirPrecos(&estoque);
+                break;
+            case 3:
+                printf("Digite o nome do produto a ser removido: ");
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = '\0';
+                removerProduto(&estoque, nome);
+                break;
+            case 4:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+
+        printf("\n");
+
+    } while (opcao != 4);
+
+    return 0;
+}
