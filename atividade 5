@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_PACIENTES 100
+
+typedef struct {
+    char nome[100];
+} Paciente;
+
+typedef struct {
+    Paciente pacientes[MAX_PACIENTES];
+    int inicio;
+    int fim;
+} Fila;
+
+void inicializarFila(Fila *fila) {
+    fila->inicio = 0;
+    fila->fim = 0;
+}
+
+int filaVazia(Fila *fila) {
+    return fila->inicio == fila->fim;
+}
+
+int filaCheia(Fila *fila) {
+    return (fila->fim + 1) % MAX_PACIENTES == fila->inicio;
+}
+
+void adicionarPaciente(Fila *fila, const char *nome) {
+    if (!filaCheia(fila)) {
+        strcpy(fila->pacientes[fila->fim].nome, nome);
+        fila->fim = (fila->fim + 1) % MAX_PACIENTES;
+    } else {
+        printf("Fila cheia!\n");
+    }
+}
+
+void removerPaciente(Fila *fila) {
+    if (!filaVazia(fila)) {
+        printf("Paciente atendido: %s\n", fila->pacientes[fila->inicio].nome);
+        fila->inicio = (fila->inicio + 1) % MAX_PACIENTES;
+    } else {
+        printf("Nenhum paciente na fila!\n");
+    }
+}
+
+void exibirPacientes(Fila *fila) {
+    if (filaVazia(fila)) {
+        printf("Nenhum paciente aguardando atendimento.\n");
+        return;
+    }
+
+    int i = fila->inicio;
+    while (i != fila->fim) {
+        printf("%s\n", fila->pacientes[i].nome);
+        i = (i + 1) % MAX_PACIENTES;
+    }
+}
+
+int main() {
+    Fila fila;
+    inicializarFila(&fila);
+
+    int opcao;
+    char nome[100];
+
+    do {
+        printf("1. Adicionar paciente\n2. Remover paciente\n3. Exibir pacientes\n4. Sair\n");
+        scanf("%d", &opcao);
+        getchar();
+
+        switch (opcao) {
+            case 1:
+                printf("Digite o nome do paciente: ");
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = '\0';
+                adicionarPaciente(&fila, nome);
+                break;
+            case 2:
+                removerPaciente(&fila);
+                break;
+            case 3:
+                exibirPacientes(&fila);
+                break;
+            case 4:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+
+        printf("\n");
+
+    } while (opcao != 4);
+
+    return 0;
+}
