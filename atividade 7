@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+typedef struct Visitante {
+    char nome[100];
+    struct Visitante* proximo;
+} Visitante;
+
+
+Visitante* frente = NULL;
+Visitante* tras = NULL;
+
+
+void adicionarVisitante(const char* nome) {
+    Visitante* novo = (Visitante*)malloc(sizeof(Visitante));
+    if (novo == NULL) {
+        printf("Erro ao alocar memória.\n");
+        return;
+    }
+    strcpy(novo->nome, nome);
+    novo->proximo = NULL;
+
+    if (tras == NULL) {
+      
+        frente = novo;
+        tras = novo;
+    } else {
+        tras->proximo = novo;
+        tras = novo;
+    }
+
+    printf("Visitante %s adicionado à fila.\n", nome);
+}
+
+
+void removerVisitante() {
+    if (frente == NULL) {
+        printf("Não há visitantes na fila.\n");
+        return;
+    }
+
+    Visitante* visitanteAtendido = frente;
+    frente = frente->proximo;
+
+    if (frente == NULL) {
+       
+        tras = NULL;
+    }
+
+    printf("Visitante %s saiu do brinquedo.\n", visitanteAtendido->nome);
+    free(visitanteAtendido);
+}
+
+
+void exibirFila() {
+    Visitante* atual = frente;
+    if (atual == NULL) {
+        printf("A fila está vazia.\n");
+        return;
+    }
+
+    printf("Lista de espera:\n");
+    while (atual != NULL) {
+        printf("- %s\n", atual->nome);
+        atual = atual->proximo;
+    }
+}
+
+
+int main() {
+    int opcao;
+    char nome[100];
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Adicionar visitante\n");
+        printf("2. Remover visitante\n");
+        printf("3. Exibir lista de espera\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+        getchar();
+        switch (opcao) {
+            case 1:
+                printf("Informe o nome do visitante: ");
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = 0; 
+                adicionarVisitante(nome);
+                break;
+            case 2:
+                removerVisitante();
+                break;
+            case 3:
+                exibirFila();
+                break;
+            case 0:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+                break;
+        }
+    } while (opcao != 0);
+
+    
+    while (frente != NULL) {
+        Visitante* temp = frente;
+        frente = frente->proximo;
+        free(temp);
+    }
+
+    return 0;
+}
