@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_JOGADORES 100
+
+typedef struct {
+    char nome[50];
+    int pontuacao;
+} Jogador;
+
+Jogador jogadores[MAX_JOGADORES];
+int total_jogadores = 0;
+
+void inserir_pontuacao() {
+    Jogador novo_jogador;
+    printf("Digite o nome do jogador: ");
+    scanf(" %[^\n]", novo_jogador.nome);
+    printf("Digite a pontuação do jogador: ");
+    scanf("%d", &novo_jogador.pontuacao);
+
+    int i;
+    for (i = total_jogadores - 1; (i >= 0 && jogadores[i].pontuacao > novo_jogador.pontuacao); i--) {
+        jogadores[i + 1] = jogadores[i];
+    }
+    jogadores[i + 1] = novo_jogador;
+    total_jogadores++;
+}
+
+void exibir_pontuacoes() {
+    for (int i = 0; i < total_jogadores; i++) {
+        printf("Jogador: %s, Pontuação: %d\n", jogadores[i].nome, jogadores[i].pontuacao);
+    }
+}
+
+void remover_jogador() {
+    char nome[50];
+    printf("Digite o nome do jogador desqualificado: ");
+    scanf(" %[^\n]", nome);
+
+    for (int i = 0; i < total_jogadores; i++) {
+        if (strcmp(jogadores[i].nome, nome) == 0) {
+            for (int j = i; j < total_jogadores - 1; j++) {
+                jogadores[j] = jogadores[j + 1];
+            }
+            total_jogadores--;
+            printf("Jogador %s removido.\n", nome);
+            return;
+        }
+    }
+    printf("Jogador não encontrado.\n");
+}
+
+int main() {
+    int opcao;
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Inserir Pontuação\n");
+        printf("2. Exibir Pontuações\n");
+        printf("3. Remover Jogador\n");
+        printf("4. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                inserir_pontuacao();
+                break;
+            case 2:
+                exibir_pontuacoes();
+                break;
+            case 3:
+                remover_jogador();
+                break;
+            case 4:
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+        }
+    } while (opcao != 4);
+
+    return 0;
+}
